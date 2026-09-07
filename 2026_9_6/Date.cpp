@@ -111,6 +111,9 @@
 //}
 
 #include "Date.h"
+
+// 以下为原课程示例实现，保留作学习参考；正式实现位于文件后半部分。
+#if 0
 Date::Date(int year, int month, int day) {
 	_year = year;
 	_month = month;
@@ -389,6 +392,270 @@ int Date::operator-(const Date& d)const {
 
 void operator<<(ostream& _cout, const Date& d) {
 	_cout << d._year << '/' << d._month << '/' << d._day << endl;
+}
+
+#endif
+
+#include <cstdint>
+#include <iostream>
+#include <limits>
+#include <stdexcept>
+
+namespace
+{
+	const std::int64_t kDaysPer400Years = 146097;
+
+	struct DateParts
+	{
+		int year;
+		int month;
+		int day;
+	};
+
+	bool IsLeapYear(int year) noexcept
+	{
+		return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+	}
+
+	int GetMonthDay(int year, int month) noexcept
+	{
+		static const int monthDays[12] =
+		{
+			31, 28, 31, 30, 31, 30,
+			31, 31, 30, 31, 30, 31
+		};
+
+		return month == 2 && IsLeapYear(year) ? 29 : monthDays[month - 1];
+	}
+
+	bool IsValidDate(int year, int month, int day) noexcept
+	{
+		if (year < 1 || month < 1 || month > 12 || day < 1)
+		{
+			return false;
+		}
+
+		return day <= GetMonthDay(year, month);
+	}
+
+	// 计算指定年份之前共有多少天。使用 64 位整数，确保 INT_MAX 年仍可安全表示。
+	std::int64_t DaysBeforeYear(int year) noexcept
+	{
+		const std::int64_t completedYears = static_cast<std::int64_t>(year) - 1;
+		return completedYears * 365
+			+ completedYears / 4
+			- completedYears / 100
+			+ completedYears / 400;
+	}
+
+	// 将日期转换为从 1/1/1 开始、以 0 为起点的日期序号。
+	std::int64_t DateToSerial(int year, int month, int day) noexcept
+	{
+		static const int daysBeforeMonth[12] =
+		{
+			0, 31, 59, 90, 120, 151,
+			181, 212, 243, 273, 304, 334
+		};
+
+		std::int64_t serial = DaysBeforeYear(year);
+		serial += daysBeforeMonth[month - 1];
+		if (month > 2 && IsLeapYear(year))
+		{
+			++serial;
+		}
+		return serial + day - 1;
+	}
+
+	const std::int64_t kMaximumSerial =
+		DateToSerial((std::numeric_limits<int>::max)(), 12, 31);
+
+	// 利用公历每 400 年重复一次（共 146097 天）的性质反向计算年份。
+	// 年份确定后只按月检查，循环次数最多为 12，不会随日期跨度增长。
+	DateParts SerialToDate(std::int64_t serial) noexcept
+	{
+		const std::int64_t fourHundredYearCycles = serial / kDaysPer400Years;
+		std::int64_t dayInCycle = serial % kDaysPer400Years;
+
+		std::int64_t hundredYearCycles = dayInCycle / 36524;
+		if (hundredYearCycles == 4)
+		{
+			hundredYearCycles = 3;
+		}
+		dayInCycle -= hundredYearCycles * 36524;
+
+		std::int64_t fourYearCycles = dayInCycle / 1461;
+		if (fourYearCycles == 25)
+		{
+			fourYearCycles = 24;
+		}
+		dayInCycle -= fourYearCycles * 1461;
+
+		std::int64_t oneYearCycles = dayInCycle / 365;
+		if (oneYearCycles == 4)
+		{
+			oneYearCycles = 3;
+		}
+		dayInCycle -= oneYearCycles * 365;
+
+		const std::int64_t year64 = fourHundredYearCycles * 400
+			+ hundredYearCycles * 100
+			+ fourYearCycles * 4
+			+ oneYearCycles + 1;
+		const int year = static_cast<int>(year64);
+
+		int month = 1;
+		while (dayInCycle >= GetMonthDay(year, month))
+		{
+			dayInCycle -= GetMonthDay(year, month);
+			++month;
+		}
+
+		DateParts result = { year, month, static_cast<int>(dayInCycle) + 1 };
+		return result;
+	}
+
+	Date DateFromSerial(std::int64_t serial)
+	{
+		const DateParts parts = SerialToDate(serial);
+		return Date(parts.year, parts.month, parts.day);
+	}
+}
+
+Date::Date(int year, int month, int day)
+	: _year(year)
+	, _month(month)
+	, _day(day)
+{
+	if (!IsValidDate(year, month, day))
+	{
+		throw std::invalid_argument("invalid Gregorian date");
+	}
+}
+
+void Date::Print() const
+{
+	std::cout << *this << '\n';
+}
+
+bool Date::operator>(const Date& date) const noexcept
+{
+	return date < *this;
+}
+
+bool Date::operator>=(const Date& date) const noexcept
+{
+	return !(*this < date);
+}
+
+bool Date::operator<(const Date& date) const noexcept
+{
+	if (_year != date._year)
+	{
+		return _year < date._year;
+	}
+	if (_month != date._month)
+	{
+		return _month < date._month;
+	}
+	return _day < date._day;
+}
+
+bool Date::operator<=(const Date& date) const noexcept
+{
+	return !(date < *this);
+}
+
+bool Date::operator==(const Date& date) const noexcept
+{
+	return _year == date._year
+		&& _month == date._month
+		&& _day == date._day;
+}
+
+bool Date::operator!=(const Date& date) const noexcept
+{
+	return !(*this == date);
+}
+
+Date Date::operator+(int day) const
+{
+	// 先提升为 int64_t 再参与运算，避免 day == INT_MIN 时对 int 取负溢出。
+	const std::int64_t target = DateToSerial(_year, _month, _day)
+		+ static_cast<std::int64_t>(day);
+	if (target < 0 || target > kMaximumSerial)
+	{
+		throw std::out_of_range("date addition is outside the supported range");
+	}
+	return DateFromSerial(target);
+}
+
+Date& Date::operator+=(int day)
+{
+	// 先生成合法结果，再写回当前对象；若计算抛出异常，原对象保持不变。
+	const Date result = *this + day;
+	*this = result;
+	return *this;
+}
+
+Date Date::operator-(int day) const
+{
+	// 直接在 64 位域中减去偏移，不对 INT_MIN 执行危险的 int 取负操作。
+	const std::int64_t target = DateToSerial(_year, _month, _day)
+		- static_cast<std::int64_t>(day);
+	if (target < 0 || target > kMaximumSerial)
+	{
+		throw std::out_of_range("date subtraction is outside the supported range");
+	}
+	return DateFromSerial(target);
+}
+
+Date& Date::operator-=(int day)
+{
+	// 与 += 一样，采用“计算成功后再提交”的方式提供强异常保证。
+	const Date result = *this - day;
+	*this = result;
+	return *this;
+}
+
+Date& Date::operator++()
+{
+	return *this += 1;
+}
+
+Date Date::operator++(int)
+{
+	const Date previous(*this);
+	++(*this);
+	return previous;
+}
+
+Date& Date::operator--()
+{
+	return *this -= 1;
+}
+
+Date Date::operator--(int)
+{
+	const Date previous(*this);
+	--(*this);
+	return previous;
+}
+
+int Date::operator-(const Date& date) const
+{
+	const std::int64_t difference = DateToSerial(_year, _month, _day)
+		- DateToSerial(date._year, date._month, date._day);
+	if (difference < (std::numeric_limits<int>::min)()
+		|| difference > (std::numeric_limits<int>::max)())
+	{
+		throw std::overflow_error("date difference cannot be represented by int");
+	}
+	return static_cast<int>(difference);
+}
+
+std::ostream& operator<<(std::ostream& output, const Date& date)
+{
+	return output << date._year << '/' << date._month << '/' << date._day;
 }
 
 
