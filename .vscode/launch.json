@@ -1,0 +1,53 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C++ 调试（UTF-8）",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "${fileDirname}",
+      "program": "${fileDirname}/build/Debug/outDebug.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "E:/w64devkit/bin/gdb.exe",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Use UTF-8 for GDB character display",
+          "text": "-gdb-set charset UTF-8",
+          "ignoreFailures": false
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "e:/C-plus-plus-code/2026_9_26",
+      "program": "e:/C-plus-plus-code/2026_9_26/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Use UTF-8 for GDB character display",
+          "text": "-gdb-set charset UTF-8",
+          "ignoreFailures": false
+        }
+      ]
+    }
+  ]
+}
