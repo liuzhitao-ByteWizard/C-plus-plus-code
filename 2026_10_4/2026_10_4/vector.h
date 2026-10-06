@@ -23,6 +23,8 @@ namespace byte {
 
 		void reserve(size_t n);
 
+		void resize(size_t n, const T& val = T());
+
 		//可读可写
 		T& operator[](size_t n) {
 			assert(!empty());
@@ -40,21 +42,80 @@ namespace byte {
 		iterator erase(iterator pos);
 
 		vector()
-			:_start(nullptr)
-			, _finish(nullptr)
-			, _end_of_storage(nullptr)
+		:_start(nullptr)
+		,_finish(nullptr)
+		,_end_of_storage(nullptr)
 		{
 
 		}
+
+		vector(size_t n, const T& val = T()) {
+			//开空间 + 插入数据
+			reserve(n); 
+
+			for (int i = 0; i < n; i++) {
+				*_finish = val;
+				++_finish;
+			}
+		}
+		//il本质上就是一个数组，就两个指针，一个指向开始，一个指向结束的下一个位置
+		vector(initializer_list<T> il) {
+			reserve(il.size());
+			for (auto& e : il) {
+				push_back(e);
+			}
+		}
+
+
+	
 
 		//加上引用，减少拷贝
 		void push_back(const T& x);
 		void pop_back();
 
+		~vector() {
+			if (_start) {
+				delete[] _start;
+				_start = _finish =  _end_of_storage =  nullptr;
+			}
+		}
+
+		template <class InputIterator>
+		vector(InputIterator first, InputIterator last) {
+			while (first != last) {
+				push_back(*first);
+				++first;
+			}
+		}
+
+		//v2(v1)
+		// this -> v2
+		// v -> v1
+		vector(const vector<T>& v) {
+			//先把v拷贝给临时对象（使用迭代器区间进行拷贝）
+			vector tmp(v.begin(), v.end());
+
+			//在进行交换
+			swap(tmp);
+		}
+
+		//v4 = v1
+		vector<T>& operator=(vector<T> v) {
+			swap(v);
+			return *this;
+		}
+
+		void swap(vector<T>& v) {
+			std::swap(_start, v._start);
+			std::swap(_finish, v._finish);
+			std::swap(_end_of_storage, v._end_of_storage);
+		}
+
+
 	private:
-		iterator _start;
-		iterator _finish;
-		iterator _end_of_storage;
+		iterator _start = nullptr;
+		iterator _finish = nullptr;
+		iterator _end_of_storage = nullptr;
 	};
 
 	template <class T>
@@ -83,7 +144,9 @@ namespace byte {
 			size_t oldSize = size();
 			T* tmp = new T[n];
 			//2.拷贝旧数据 + 释放旧空间
-			memcpy(tmp, _start, size() * sizeof(T));
+			for (int i = 0; i < oldSize; i++) {
+				tmp[i] = _start[i];
+			}
 			delete[] _start;
 			//3.指向新空间
 			_start = tmp;
@@ -107,9 +170,12 @@ namespace byte {
 			pos = _start + offset;
 		}
 
-		// 将 [pos, _finish) 内的元素整体右移一位，为新元素腾出位置
-		// 源区间与目标区间可能重叠，因此使用 memmove
-		memmove(pos + 1, pos, sizeof(T) * (_finish - pos));
+		iterator it = _finish;
+		while (it != pos) {
+			*it = *(it - 1);
+			--it;
+		}
+		//memmove(pos + 1, pos, sizeof(T) * (_finish - pos));
 
 		// 将新元素写入插入位置
 		*pos = x;
@@ -130,8 +196,23 @@ namespace byte {
 		return pos; //返回删除之后的下一个位置
 	}
 
-
-
+	template <class T>
+	void vector<T>::resize(size_t n, const T& val) {
+		//考虑扩容的问题
+		if (n > capacity()) {
+			reserve(n);
+		}
+		//尾插数据
+		if(n > size()){
+			while (_finish != _start + n) {
+				*_finish = val;
+				++_finish;
+			}
+		}
+		else { //保留前n个
+			_finish = _start + n;
+		}
+	}
 };
 
 

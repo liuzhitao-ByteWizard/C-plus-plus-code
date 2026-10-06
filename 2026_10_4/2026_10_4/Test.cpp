@@ -88,6 +88,8 @@ void testvector3() {
 //	}
 //	cout << endl;
 //}
+
+
 void testvector6() {
 	byte::vector<int> v6;
 	v6.push_back(1);
@@ -112,10 +114,89 @@ void testvector6() {
 }
 
 
+template <class T>
+void Print(const byte::vector<T>& v) {
+
+	typename byte::vector<T>::const_iterator it = v.begin();
+	while (it != v.end()) {
+		cout << *it << " ";
+		++it;
+	}
+	cout << endl;
+}
+
+void testvector7() {
+	byte::vector<int> v1;
+	byte::vector<double> v2;
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+	v1.push_back(5);
+	v1.push_back(6);
+	Print(v1);
+	v2.push_back(1.0);
+	v2.push_back(2.0);
+	v2.push_back(3.0);
+	v2.push_back(4.0);
+	v2.push_back(5.0);
+	v2.push_back(6.0);
+	Print(v2);
+}
+
+//void testvector8() {
+//	byte::vector<int> v8;
+//	v8.resize(10);
+//	Print(v8);
+//	byte::vector<double> v9;
+//	v9.resize(10);
+//	Print(v9);
+//}
+
+//void testvector9() {
+//	byte::vector<int> v10{1 , 2 , 3 , 4 , 5 , 6};
+//	byte::vector<int> v11(v10.begin() + 2, v10.end()); //左闭右开区间
+//	Print(v11);
+//	byte::vector<int> v12(10u, 1);
+//	Print(v12);
+//}
+
+void testvector10() {
+	byte::vector<int> v1(5u, 1);
+	byte::vector<int> v2(v1);
+
+	byte::vector<int> v3(10u,2);
+	byte::vector<int> v4(v3);
+
+	v3 = v1;
+
+	Print(v3);
+}
+
+void testvector11() {
+	byte::vector<string> v1;
+	v1.push_back("22222222222222222");
+	v1.push_back("222222222222222");
+	v1.push_back("22222222");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	v1.insert(v1.begin(), "11111111111111");
+	Print(v1);
+}
+
+
 
 int main() {
-	//testvector4();
-	//testvector5();
-	testvector6();
+	//testvector8();
+	//testvector9();
+	//testvector10();
+	testvector11();
 	return 0;
 }
