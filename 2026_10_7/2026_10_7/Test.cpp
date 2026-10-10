@@ -1,7 +1,5 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-//#include <list>
-//#include <vector>
 #include <algorithm>
 
 //using namespace std;
@@ -221,39 +219,130 @@
 //}
 //
 
+//#include "list.h"
+//
+//void testbytelist1() {
+//	byte::list<int> lt1;
+//	lt1.push_back(1);
+//	lt1.push_back(2);
+//	lt1.push_back(3);
+//	lt1.push_back(4);
+//	lt1.push_back(5);
+//	lt1.push_back(6);
+//}
+//
+//void testbytelist2() {
+//	byte::list<int> lt1;
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	lt1.push_back(1);
+//	byte::list<int>::iterator it = lt1.begin();
+//	while (it != lt1.end()) {
+//		std::cout << *it << ' ';
+//		it++;
+//	}
+//	std::cout << std::endl;
+//}
+//
+//int main() {
+//	//testbytelist1();
+//	testbytelist2();
+//	return 0;
+//}
+
 #include "list.h"
 
 void testbytelist1() {
 	byte::list<int> lt1;
 	lt1.push_back(1);
-	lt1.push_back(2);
-	lt1.push_back(3);
-	lt1.push_back(4);
-	lt1.push_back(5);
-	lt1.push_back(6);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	for (auto& e : lt1) {
+		std::cout << e << ' ';
+	}
+	std::cout << std::endl;
+
+	lt1.erase(lt1.begin());
+	lt1.erase(lt1.begin());
+	lt1.erase(lt1.begin());
+
+	for (auto& e : lt1) {
+		std::cout << e << ' ';
+	}
+	std::cout << std::endl;
 }
 
 void testbytelist2() {
 	byte::list<int> lt1;
 	lt1.push_back(1);
 	lt1.push_back(1);
-	lt1.push_back(1);
-	lt1.push_back(1);
-	lt1.push_back(1);
-	lt1.push_back(1);
-	lt1.push_back(1);
-	lt1.push_back(1);
-	byte::list<int>::iterator it = lt1.begin();
-	while (it != lt1.end()) {
-		std::cout << *it << ' ';
-		it++;
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	lt1.insert(lt1.begin(), 0);
+	for (auto& e : lt1) {
+		std::cout << e << ' ';
+	}
+	std::cout << std::endl;
+
+	lt1.pop_back();
+	lt1.pop_back();
+	lt1.pop_back();
+	for (auto& e : lt1) {
+		std::cout << e << ' ';
+	}
+	std::cout << std::endl;
+
+	lt1.clear();
+	for (auto& e : lt1) {
+		std::cout << e << ' ';
 	}
 	std::cout << std::endl;
 }
 
+void testbytelist3() {
+	byte::list<int> lt1;
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	lt1.push_back(1);
+	byte::list<int> lt2;
+	lt2 = lt1;
+	for (auto& e : lt2) {
+		std::cout << e << ' ';
+	}
+	std::cout << std::endl;
+}
+
+//void testbytelist5() {
+//	byte::list<int> lt1 = { 1,2,3,4,5 };
+//	for (auto& e : lt1) {
+//		std::cout << e << ' ';
+//	}
+//	std::cout << std::endl;
+//}
+
+
+
+
+
+
 int main() {
-	//testbytelist1();
-	testbytelist2();
+	//testbytelist2();
+	testbytelist3();
 	return 0;
 }
 
