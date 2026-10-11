@@ -266,10 +266,6 @@ void testbytelist1() {
 	lt1.push_back(1);
 	lt1.insert(lt1.begin(), 0);
 	lt1.insert(lt1.begin(), 0);
-	lt1.insert(lt1.begin(), 0);
-	lt1.insert(lt1.begin(), 0);
-	lt1.insert(lt1.begin(), 0);
-	lt1.insert(lt1.begin(), 0);
 	for (auto& e : lt1) {
 		std::cout << e << ' ';
 	}
@@ -327,22 +323,57 @@ void testbytelist3() {
 	std::cout << std::endl;
 }
 
-//void testbytelist5() {
-//	byte::list<int> lt1 = { 1,2,3,4,5 };
-//	for (auto& e : lt1) {
-//		std::cout << e << ' ';
-//	}
-//	std::cout << std::endl;
-//}
+void testbytelist4() {
+	const byte::list<int> lt1 = { 1,2,3,4,5 };
+	byte::list<int>::const_iterator it = lt1.begin();
+	while (it != lt1.end()) {
+		std::cout << *it << ' ';
+		//(*it)++; 可读不可写
+		it++;
+	}
+	std::cout << std::endl;
 
+	byte::list<int> lt2 = { 1,2,3,4,5 };
+	auto it1 = lt2.begin();
+	while (it1 != lt2.end()) {
+		++(*it1); //可读可写
+		std::cout << *it1 << ' ';
+		it1++;
+	}
+}
 
+struct Pos {
+	int x;
+	int y;
+};
 
+void testbytelist5() {
+	byte::list<Pos> lt;
+	Pos p1 = { 1,1 };
+	Pos p2 = { 2,3 };
+	Pos p3 = { 3,4 };
+	lt.push_back(p1);
+	lt.push_back(p2);
+	lt.push_back(p3);
 
+	//这里不能直接打印对象的，不支持流插入流提取的输出
+	byte::list<Pos>::iterator it = lt.begin();
+	while (it != lt.end()) {
+		//cout << (*it).x << ' ' << (*it).y << endl;
+		std::cout << it->x << ' ' << it->y << std::endl;
+		//为了可读性呢，编译器省略了一个箭头
+		// 第一个箭头是运算符重载（Pos*），第二个箭头是通过结构体访问它的成员
+		//std::cout << it.operator->()->x << ' ' << it.operator->()->y << std::endl;
+		it++;
+	}
+	std::cout << std::endl;
 
+	
+	
+}
 
 int main() {
-	//testbytelist2();
-	testbytelist3();
+	testbytelist5();
 	return 0;
 }
 

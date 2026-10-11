@@ -23,82 +23,54 @@ namespace byte {
 		}
 	};
 
-	template <class T>
+	template <class T , class Ref , class Ptr>
 	struct list_iterator {
 		typedef list_node<T> Node;
-
+		typedef list_iterator<T, Ref, Ptr> Self;
 		list_iterator(Node* node)
 		:_node(node){
 		}
 
-		list_iterator<T>& operator++(int) {
+		Self& operator++() {
 			_node = _node->_next;
 			return *this;
 		}
 
-		list_iterator<T>& operator++() {
+		Self operator++(int) {
+			//将值拷贝给临时对象，让对象++
+			Self tmp(*this);
 			_node = _node->_next;
-			return *this;
+			return tmp;
 		}
 
-		list_iterator<T>& operator--() {
+		Self& operator--() {
 			_node = _node->_prev;
 			return *this;
 		}
 
-		bool operator!=(list_iterator<T> node) {
-			return _node != node._node;
-		}
-
-		//解引用，访问的是当前节点中的值，不是节点
-		T& operator*() {
-			return _node->_val;
-		}
-
-		bool operator!=(const list_iterator<T>& lt) const {
-			return _node != lt._node;
-		}
-
-
-		Node* _node;
-
-	};
-
-	template <class T>
-	struct list_const_iterator {
-		typedef list_node<T> Node;
-
-		list_const_iterator(Node* node)
-			:_node(node) {
-		}
-
-		list_const_iterator<T>& operator++(int) {
-			_node = _node->_next;
-			return *this;
-		}
-
-		list_const_iterator<T>& operator++() {
-			_node = _node->_next;
-			return *this;
-		}
-
-		list_const_iterator<T>& operator--() {
+		Self operator--(int) {
+			Self tmp(*this);
 			_node = _node->_prev;
-			return *this;
-		}
-
-		bool operator!=(list_iterator<T> node) {
-			return _node != node._node;
+			return tmp;
 		}
 
 		//解引用，访问的是当前节点中的值，不是节点
-		const T& operator*() {
+		Ref operator*() {
 			return _node->_val;
 		}
 
-		bool operator!=(const list_iterator<T>& lt) const {
+		bool operator!=(const Self& lt) const {
 			return _node != lt._node;
 		}
+
+		bool operator==(const Self& lt) const {
+			return _node == lt._node;
+		}
+
+		Ptr operator->() {
+			return &_node->_val;
+		}
+
 		Node* _node;
 
 	};
@@ -108,8 +80,9 @@ namespace byte {
 	class list {
 	public:
 		typedef list_node<T> Node;
-		typedef list_iterator<T> iterator;
-		typedef list_const_iterator<T> const_iterator;
+		typedef list_iterator<T , T& , T*> iterator;
+		typedef list_iterator<T , const T& , const T*> const_iterator;
+		//typedef list_const_iterator<T> const_iterator;
 		//typedef const T* iterator;
 
 		list() {
@@ -188,7 +161,7 @@ namespace byte {
 		}
 		//拷贝构造函数
 		//lt1(lt2)
-		list(list<T>& lt) {
+		list(const list<T>& lt) {
 			empty_initialize();
 			auto it = lt.begin();
 			//拷贝一样节点的个数，一样的值
@@ -215,14 +188,14 @@ namespace byte {
 			std::swap(_size, lt._size);
 		}
 
-		//list(initializer_list<T> il) {
-		//	//1.初始化链表结构
-		//	empty_initialize();
-		//	//2.插入数据
-		//	for (auto& e : il) {
-		//		push_back(e);
-		//	}
-		//}
+		list(std::initializer_list<T> il) {
+			//1.初始化链表结构
+			empty_initialize();
+			//2.插入数据
+			for (auto& e : il) {
+				push_back(e);
+			}
+		}
 
 
 	private:
