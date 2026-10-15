@@ -34,6 +34,8 @@ namespace byte {
 		bool empty() { return _con.empty(); }
 
 
+
+
 	private:
 		Container _con;
 	};
