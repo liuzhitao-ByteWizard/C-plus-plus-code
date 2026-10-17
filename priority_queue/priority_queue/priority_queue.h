@@ -9,7 +9,7 @@ using namespace std;
 
 namespace byte {
 
-	template<class T , class Container = std::vector<T> , class Compare = std::less<T>>
+	template<class T , class Container = std::vector<T> , class Compare = Less<T>>
 	class priority_queue {
     public:
         void Adjustup(std::size_t child)

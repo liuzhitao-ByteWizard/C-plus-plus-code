@@ -142,7 +142,7 @@ public:
 //			(x._year == y._year && x._month < y._month) ||
 //			(x._year == y._year && x._month == y._month && x._day < y._day);
 //	}
-//};、
+//};
 
 ostream& operator<<(ostream& _cout, const Date& d)
 {
@@ -272,62 +272,129 @@ private:
 	T2 _d2;
 };
 
-//全特化
+////全特化
+//template<>
+//class Data<int, char>
+//{
+//public:
+//	Data() { cout << "Data<int, char>" << endl; }
+//
+//private:
+//	int _d1;
+//	char _d2;
+//};
+//
+////偏特化
+//template<class T>
+//class Data<T, char> {
+//public:
+//	Data() { cout << "Data<T, char>" << endl; }
+//
+//private:
+//};
+//
+//template<typename T1 ,  typename T2>
+//class Data<T1*, T2*> {
+//public:
+//	Data() { cout << "Data<T1*, T2*>" << endl; }
+//private:
+//};
+//
+//template <typename T1, typename T2>
+//class Data <T1&, T2&>
+//{
+//public:
+//	Data()
+//	{
+//		cout << "Data<T1&, T2&>" << endl;
+//	}
+//private:
+//};
+//
+//template <typename T1, typename T2>
+//class Data <T1&, T2*>
+//{
+//public:
+//	Data()
+//	{
+//		cout << "Data<T1&, T2*>" << endl;
+//	}
+//private:
+//};
+
+//void TestVector()
+//{
+//	Data<int, int> d1;
+//	Data<int, char> d2;
+//	Data<char, char> d3;
+//	Data<char*, int*> d4;
+//}
+//template<class T>
+//class Less {
+//public:
+//	bool operator()(const T& x, const T& y) {
+//		return x < y;
+//	}
+//};
+
 template<>
-class Data<int, char>
-{
+class Less<Date*> {
 public:
-	Data() { cout << "Data<int, char>" << endl; }
-
-private:
-	int _d1;
-	char _d2;
+	//const Date*& x, const Date*& y err //const在T&修饰的是引用，这里修饰的是指针，是const Data*
+	bool operator()(Date* const & x, Date* const & y) {
+		return *x < *y;
+	}
 };
 
-//偏特化
-template<class T>
-class Data<T, char> {
-public:
-	Data() { cout << "Data<T, char>" << endl; }
 
-private:
-	int _d1;
-	char _d2;
+class Conditional {
+public:
+	bool operator()(int x) {
+		return x % 2 && x % 11 == 0;
+	}
 };
 
-void TestVector()
-{
-	Data<int, int> d1;
-	Data<int, char> d2;
-	Data<char, char> d3;
+void testbytequeue7() {
+
+	std::vector<int> myvector;
+
+	myvector.push_back(10);
+	myvector.push_back(25);
+	myvector.push_back(40);
+	myvector.push_back(55);
+	std::vector<int>::iterator it = std::find_if(myvector.begin(), myvector.end(), Conditional());
+	std::cout << "The first odd value is " << *it << '\n';
 }
 
 int main() {
-	TestVector();
+	testbytequeue7();
 }
 
 
-//void testbytequeue7() {
-//	byte::priority_queue<Date*> q1;
-//	q1.push(new Date(2026, 10, 29));
-//	q1.push(new Date(2026, 10, 28));
-//	q1.push(new Date(2026, 10, 30));
-//	q1.push(new Date(2020, 1, 30));
-//	q1.push(new Date(2021, 3, 30));
-//
-//	while (!q1.empty()) {
-//		cout << *q1.top() << endl;
-//		q1.pop();
+//void test8() {
+//	vector<int> v1 = { 1,7,4,3,9,6,7,0,10 };
+//	sort(v1.begin(),  v1.end()); //默认的比较器是less,升序
+//	for (auto& e : v1) {
+//		cout << e << ' ';
+//	}
+//	cout << endl;
+//	sort(v1.begin(), v1.end(), greater<int>());
+//	for (auto& e : v1) {
+//		cout << e << ' ';
 //	}
 //	cout << endl;
 //
-//	std::vector<int> myvector;
-//
-//	myvector.push_back(10);
-//	myvector.push_back(25);
-//	myvector.push_back(40);
-//	myvector.push_back(55);
+//	
 //}
+//priority_queue<int , vector<int> , greater<int>> q1;
+//int main() {
+//	test8();
+//	return 0;
+//}
+
+
+
+
 //int main() {
 //	//array对标的是C语言的数组
 //	array<int, 10> arr1 = {1,2,3,4,5};
