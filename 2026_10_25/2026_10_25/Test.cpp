@@ -157,12 +157,95 @@
 ////////////////////////////////////////////////
 #include "BinarySearchTree.h"
 
-int main() {
-	BSTree<int> t;
-	int a[] = { 8, 3, 1, 10, 6, 4, 7, 14, 13 };
-	for (auto e : a) {
-		t.InsertR(e);
-	}
-	t.Inorder();
-	cout << t.FindR(1) << endl;
+#include <iostream>
+#include <string>
+//#include "BinarySearchTree.h"
+//
+//int main()
+//{
+//    // 创建词典：英文单词作为 key，中文释义作为 value。
+//    keyvalue::BSTree<std::string, std::string> dict;
+//
+//    // 插入词条；二叉搜索树根据英文单词进行比较和排序。
+//    dict.Insert("left", "左边");
+//    dict.Insert("right", "右边");
+//    dict.Insert("insert", "插入");
+//    dict.Insert("string", "字符串");
+//
+//    std::string str;
+//
+//    // 每次读取一个以空白分隔的单词，读取成功则继续循环。
+//    // 遇到 EOF 或输入错误时退出循环。
+//    // Windows 控制台：按 Ctrl+Z 后回车；Linux/macOS：在空行处按 Ctrl+D。
+//    while (std::cin >> str)
+//    {
+//        // 查找单词：存在则返回对应结点的指针，不存在则返回 nullptr。
+//        auto ret = dict.Find(str);
+//
+//        if (ret)
+//        {
+//            // 通过结点的 _value 成员取得并输出中文释义。
+//            std::cout << "->" << ret->_value << std::endl;
+//        }
+//        else
+//        {
+//            // 词典中没有该单词，提示后继续读取下一次输入。
+//            std::cout << "无此单词，请重新输入" << std::endl;
+//        }
+//    }
+//
+//    return 0;
+//}
+
+int main()
+{
+    string arr[] = {
+        "苹果", "西瓜", "苹果", "西瓜", "苹果", "苹果",
+        "西瓜", "苹果", "香蕉", "苹果", "香蕉"
+    };
+
+    keyvalue::BSTree<string, int> countTree1;
+
+    for (auto& str : arr) {
+        //没有，就插入到树中
+        if (countTree1.Find(str) == nullptr) {
+            countTree1.Insert(str, 1);
+        }
+        else {
+            auto it = countTree1.Find(str);
+            it->_value++;
+        }
+    }
+
+    countTree1.Inorder();
+
+    string arr1[] = {
+    "1", "2", "3", "4", "5", "6",
+    "7", "8", "9", "10", "11"
+    };
+
+    //浅拷贝，两个对象指向同一块空间
+    keyvalue::BSTree<string, int> countTree2;
+
+
+    for (auto& str : arr1) {
+        //没有，就插入到树中
+        if (countTree2.Find(str) == nullptr) {
+            countTree2.Insert(str, 1);
+        }
+        else {
+            auto it = countTree2.Find(str);
+            it->_value++;
+        }
+    }
+
+
+    countTree1 = countTree2;
+
+
+    countTree1.Inorder();
+    countTree2.Inorder();
+
+
+    return 0;
 }
