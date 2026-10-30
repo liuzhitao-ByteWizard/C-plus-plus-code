@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!-- This project uses /utf-8. Display std::string bytes as UTF-8 in the debugger. -->
+  <Type Name="std::basic_string&lt;char,*&gt;">
+    <Intrinsic Name="size" Expression="_Mypair._Myval2._Mysize" />
+    <Intrinsic Name="capacity" Expression="_Mypair._Myval2._Myres" />
+    <Intrinsic Name="isShortString" Expression="capacity() &lt; 16" />
+    <Intrinsic Name="isLongString" Expression="capacity() &gt;= 16" />
+    <Intrinsic Name="c_str" Expression="const_cast&lt;const char*&gt;(isShortString() ? _Mypair._Myval2._Bx._Buf : _Mypair._Myval2._Bx._Ptr)" />
+    <DisplayString Condition="isShortString()">{_Mypair._Myval2._Bx._Buf,s8}</DisplayString>
+    <DisplayString Condition="isLongString()">{_Mypair._Myval2._Bx._Ptr,s8}</DisplayString>
+    <StringView Condition="isShortString()">_Mypair._Myval2._Bx._Buf,s8</StringView>
+    <StringView Condition="isLongString()">_Mypair._Myval2._Bx._Ptr,s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">size()</Item>
+      <Item Name="[capacity]" ExcludeView="simple">capacity()</Item>
+      <Item Name="[allocator]" ExcludeView="simple">_Mypair</Item>
+      <ArrayItems>
+        <Size>_Mypair._Myval2._Mysize</Size>
+        <ValuePointer Condition="isShortString()">_Mypair._Myval2._Bx._Buf</ValuePointer>
+        <ValuePointer Condition="isLongString()">_Mypair._Myval2._Bx._Ptr</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>
