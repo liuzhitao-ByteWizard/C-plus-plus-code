@@ -86,6 +86,21 @@ public:
     typedef RBTreeNode<T> Node;
     typedef RBTreeiterator<T, T&, T*> iterator;
     typedef RBTreeiterator<T, const T&, const T*> const_iterator;
+    // const 重载供 const 红黑树对象调用，返回只读迭代器。
+    const_iterator begin() const {
+        Node* leftMin = _root;
+
+        while (leftMin && leftMin->_left) {
+            leftMin = leftMin->_left;
+        }
+
+        return const_iterator(leftMin);
+    }
+
+    // 返回供 const 对象使用的尾后迭代器。
+    const_iterator end() const {
+        return const_iterator(nullptr);
+    }
 
     iterator end() {
         return iterator(nullptr);
@@ -100,20 +115,7 @@ public:
         return iterator(cur);
     }
 
-    const_iterator end() const {
-        return const_iterator(nullptr);
-    }
-
-    const_iterator begin() const  {
-        //找最左节点
-        Node* cur = _root;
-        while (cur && cur->_left) {
-            cur = cur->_left;
-        }
-        return const_iterator(cur);
-    }
-
-    bool Insert(const T& data)
+    std::pair<iterator, bool> Insert(const T& data)
     {
         // KeyofT 是模板参数，表示“从 T 类型数据中提取 key”的仿函数类型。
         // set：T 是键类型 K，SetKeyOfT 返回数据本身。
@@ -128,7 +130,7 @@ public:
         {
             _root = new Node(data);
             _root->_col = BLACK;
-            return true;
+            return {iterator(_root), true};
         }
         else
         {
@@ -156,13 +158,15 @@ public:
                 }
                 else
                 {
-                    return false;
+                    //充当查找的功能
+                    return { iterator(cur), false };
                 }
             }
 
             // 结点仍然存储完整的 T 类型数据，仿函数仅用于提取比较所需的 key。
             // 因此，map 的结点中保存的是完整键值对，而不只是 key。
             cur = new Node(data);
+            Node* current = cur; //保存新创建的结点
             cur->_col = RED;
 
             // 链接新结点时，同样通过仿函数提取 key，判断应插入哪一侧。
@@ -262,7 +266,7 @@ public:
             // 修复过程中根结点可能发生变化或被染红，最后统一设为黑色。
             _root->_col = BLACK;
 
-            return true;
+            return { current , true };
         }
     }
 

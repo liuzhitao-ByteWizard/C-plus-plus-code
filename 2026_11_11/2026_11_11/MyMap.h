@@ -15,7 +15,7 @@ namespace byte {
 		typedef typename RBTree<K, std::pair<const K,V>, MapOfT>::iterator iterator;
 		typedef typename RBTree<K, std::pair<const K, V>, MapOfT>::const_iterator const_iterator;
 
-		bool Insert(const std::pair<K,V>& kv) {
+		std::pair<iterator, bool> Insert(const std::pair<K,V>& kv) {
 			return _t.Insert(kv);
 		}
 
@@ -33,6 +33,13 @@ namespace byte {
 
 		const_iterator end() const {
 			return _t.end();
+		}
+
+		//有查找 + 插入的功能
+		V& operator[](const K& k)  {
+			std::pair<iterator, bool> it = _t.Insert({ k, V() });
+			iterator ret = it.first;
+			return ret->second;
 		}
 
 	private:

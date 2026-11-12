@@ -14,7 +14,7 @@ namespace byte {
 		typedef typename RBTree<K, const K, SetOfT>::const_iterator const_iterator;
 		typedef typename RBTree<K, const K, SetOfT>::iterator iterator;
 
-		bool Insert(const K& k) {
+		std::pair<iterator, bool> Insert(const K& k) {
 			return _t.Insert(k);
 		}
 
